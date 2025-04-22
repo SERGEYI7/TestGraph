@@ -5,6 +5,7 @@
 
 class CustomGraph : public QCustomPlot
 {
+    Q_OBJECT
 public:
     CustomGraph(QWidget *parent = nullptr);
     QCustomPlot *customPlot;
@@ -16,8 +17,10 @@ public:
     float getSecondPoint() {return second_point;}
     virtual ~CustomGraph();
 
-private slots:
+private:
     float first_point{0}, second_point{0};
+
+private slots:
     void mousePress(QMouseEvent * event);
     void mouseWheel();
     void mouseMove(QMouseEvent * event);

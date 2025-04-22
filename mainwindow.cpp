@@ -9,9 +9,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     dialog_history = QSharedPointer<DialogHistory>(new DialogHistory);
     undoStack = QSharedPointer<QUndoStack>(new QUndoStack(this));
-    // undoStack->cre
-    // undoStack->createUndoAction(this, QKeySequence("Ctrl+Z"));
-    // undoStack->createRedoAction(this, QKeySequence("Ctrl+Y"));
 
 
     shortcut_back = QSharedPointer<QShortcut>(new QShortcut(QKeySequence("Ctrl+Z"), this));

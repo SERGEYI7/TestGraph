@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 
-#define QCUSTOMPLOT_USE_LIBRARY
+// #define QCUSTOMPLOT_USE_LIBRARY
 #include <qcustomplot.h>
 
 #include <customgraph.h>

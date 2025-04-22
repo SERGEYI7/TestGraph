@@ -55,6 +55,7 @@ else()
 endif()
 
 target_link_libraries(Graph PRIVATE Qt${QT_VERSION_MAJOR}::Widgets ws2_32 Qt6::PrintSupport Qt6::Gui qcustomplot)
+target_compile_definitions(Graph PRIVATE QCUSTOMPLOT_USE_LIBRARY)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
