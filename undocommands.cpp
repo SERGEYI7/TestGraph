@@ -30,14 +30,7 @@ void UndoCommandAddSin::undo() {
     else {
         qDebug() << "Неизвестный тип";
     }
-    // if (dynamic_cast<const UndoCommandAddSin*>(undoCmd)) {
-    //     const UndoCommandAddSin* newUndoCmd = dynamic_cast<const UndoCommandAddSin*>(undoCmd);
-    //     _qcp->make_sin(newUndoCmd->get_amplitude(), newUndoCmd->get_frequency());
-    // }
-    // else if(dynamic_cast<const UndoCommandAddParabola*>(undoCmd)) {
-    //     const UndoCommandAddParabola* newUndoCmd = dynamic_cast<const UndoCommandAddParabola*>(undoCmd);
-    //     _qcp->makeDefaultGraph(newUndoCmd->get_cx());
-    // }
+
 }
 
 void UndoCommandAddSin::redo() {
@@ -55,15 +48,6 @@ void UndoCommandAddSin::redo() {
     else {
         qDebug() << "Неизвестный тип";
     }
-    // const UndoMyBase * undoCmd = _undoStack->command(_undoStack->index());
-    // if (dynamic_cast<const UndoCommandAddSin*>(undoCmd)) {
-    //     const UndoCommandAddSin* newUndoCmd = dynamic_cast<const UndoCommandAddSin*>(undoCmd);
-    //     _qcp->make_sin(newUndoCmd->get_amplitude(), newUndoCmd->get_frequency());
-    // }
-    // else if(dynamic_cast<const UndoCommandAddParabola*>(undoCmd)) {
-    //     const UndoCommandAddParabola* newUndoCmd = dynamic_cast<const UndoCommandAddParabola*>(undoCmd);
-    //     _qcp->makeDefaultGraph(newUndoCmd->get_cx());
-    // }
 }
 
 UndoCommandAddParabola::UndoCommandAddParabola(CustomGraph* qcp, int cx, const QUndoStack* undoStack, UndoMyBase * parent):
@@ -94,17 +78,6 @@ void UndoCommandAddParabola::undo() {
     else {
         qDebug() << "Не известный тип";
     }
-    // const UndoMyBase * undoCmd = _undoStack->command(_undoStack->index()-2);
-    // if (dynamic_cast<const UndoCommandAddSin*>(undoCmd)) {
-    //     const UndoCommandAddSin* newUndoCmd = dynamic_cast<const UndoCommandAddSin*>(undoCmd);
-    //     // qDebug() << "undo cmd -2 cx = " << get_cx();
-    //     _qcp->make_sin(newUndoCmd->get_amplitude(), newUndoCmd->get_frequency());
-    // }
-    // else if(dynamic_cast<const UndoCommandAddParabola*>(undoCmd)) {
-    //     const UndoCommandAddParabola* newUndoCmd = dynamic_cast<const UndoCommandAddParabola*>(undoCmd);
-    //     qDebug() << "undocmd -2 cx = " << newUndoCmd->get_cx();
-    //     _qcp->makeDefaultGraph(newUndoCmd->get_cx());
-    // }
 }
 
 void UndoCommandAddParabola::redo() {
@@ -125,17 +98,4 @@ void UndoCommandAddParabola::redo() {
     else {
         qDebug() << "Неизвестный тип";
     }
-
-    // const UndoMyBase * undoCmd = _undoStack->command(_undoStack->index());
-    // if (dynamic_cast<const UndoCommandAddSin*>(undoCmd)) {
-    //     const UndoCommandAddSin* newUndoCmd = dynamic_cast<const UndoCommandAddSin*>(undoCmd);
-    //     _qcp->make_sin(newUndoCmd->get_amplitude(), newUndoCmd->get_frequency());
-    // }
-    // else if(dynamic_cast<const UndoCommandAddParabola*>(undoCmd)) {
-    //     const UndoCommandAddParabola* newUndoCmd = dynamic_cast<const UndoCommandAddParabola*>(undoCmd);
-    //     _qcp->makeDefaultGraph(newUndoCmd->get_cx());
-    // }
-    // else {
-    //     _qcp->makeDefaultGraph(get_cx());
-    // }
 }
