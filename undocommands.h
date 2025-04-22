@@ -4,26 +4,28 @@
 #include <QUndoCommand>
 #include "customgraph.h"
 
-struct OldSin {
-    int amplitude {0};
-    int frequency {0};
-};
-static OldSin oldSin;
-
-struct OldParabola {
-    int cx {0};
-};
-static OldParabola oldParabola;
-
-enum class TypeGraph {None, Sin, Parabola} static typeGraph {TypeGraph::None};
-
-class UndoCommandAddSin : public QUndoCommand
+class UndoMyBase : public QUndoCommand
 {
 public:
-    UndoCommandAddSin(CustomGraph* qcp, int amplitude, int frequency, const QUndoCommand* oldUndoCommand, const QUndoStack* undoStack, QUndoCommand * parent = nullptr);
+    UndoMyBase(QUndoCommand * parent = nullptr) :QUndoCommand(parent) {}
+    virtual void make_graph() const = 0;
+    virtual void step_back() = 0;
+    virtual void step_forward() = 0;
+    void undo() override {step_back();}
+    void redo() override {step_forward();}
+    virtual ~UndoMyBase() {}
+};
+
+class UndoCommandAddSin : public UndoMyBase
+{
+public:
+    UndoCommandAddSin(CustomGraph* qcp, int amplitude, int frequency, const QUndoStack* undoStack, UndoMyBase * parent = nullptr);
     virtual ~UndoCommandAddSin() {}
 
+    virtual void make_graph() const override;
+    void step_back() override;
     void undo() override;
+    void step_forward() override;
     void redo() override;
     int get_amplitude() const {return _amplitude;}
     int get_frequency() const {return _frequency;}
@@ -33,27 +35,29 @@ private:
     int _amplitude, _frequency;
     int _old_amplitude {0};
     int _old_frequency {0};
-    const QUndoCommand * _oldUndoCommand;
+    const UndoMyBase * _oldUndoCommand;
     const QUndoStack * _undoStack;
-    TypeGraph type {TypeGraph::None};
 };
 
-class UndoCommandAddParabola : public QUndoCommand
+class UndoCommandAddParabola : public UndoMyBase
 {
 public:
-    UndoCommandAddParabola(CustomGraph* qcp, int cx, const QUndoCommand* oldUndoCommand, const QUndoStack* undoStack, QUndoCommand * parent = nullptr);
+    UndoCommandAddParabola(CustomGraph* qcp, int cx, const QUndoStack* undoStack, UndoMyBase * parent = nullptr);
     virtual ~UndoCommandAddParabola() {}
 
+    virtual void make_graph() const override;
+    void step_back() override;
     void undo() override;
+    void step_forward() override;
     void redo() override;
     int get_cx() const {return _cx;}
 
 private:
     CustomGraph* _qcp;
     int _cx;
-    const QUndoCommand * _oldUndoCommand;
+    const UndoMyBase * _oldUndoCommand;
     const QUndoStack * _undoStack;
-    TypeGraph type {TypeGraph::None};
 };
 
 #endif // UNDOCOMMANDS_H
+

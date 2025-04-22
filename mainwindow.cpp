@@ -32,8 +32,7 @@ void MainWindow::on_pushButton_MakeGraph_clicked()
     const QString tabText = ui->tabWidget->tabText(ui->tabWidget->currentIndex());
     if (tabText == "Функция синуса") {
         qDebug() << "Undo sin stack current index before push -> " << undoStack->index();
-        const QUndoCommand * undo_command = undoStack->command(undoStack->index()-1);
-        undoStack->push(new UndoCommandAddSin(ui->customPlot, ui->spinBox_Amplitude->value(), ui->spinBox_Frequency->value(), undo_command, undoStack.data()));
+        undoStack->push(new UndoCommandAddSin(ui->customPlot, ui->spinBox_Amplitude->value(), ui->spinBox_Frequency->value(), undoStack.data()));
         qDebug() << "Undo sin stack current index after push -> " << undoStack->index();
         dialog_history->append(QDateTime::currentDateTime().toString() +
                                QString(" | Постороен график функции синуса: y = %1 * sin(PI/%2)").
@@ -41,8 +40,7 @@ void MainWindow::on_pushButton_MakeGraph_clicked()
     }
     else if (tabText == "Другая функция") {
         qDebug() << "Undo parabola stack current index before push -> " << undoStack->index();
-        const QUndoCommand * undo_command = undoStack->command(undoStack->index()-1);
-        undoStack->push(new UndoCommandAddParabola(ui->customPlot, ui->spinBox_XDG->value(), undo_command, undoStack.data()));
+        undoStack->push(new UndoCommandAddParabola(ui->customPlot, ui->spinBox_XDG->value(), undoStack.data()));
         qDebug() << "Undo parabola stack current index after push -> " << undoStack->index();
         dialog_history->append(QDateTime::currentDateTime().toString() +
                                QString(" | Постороен график фуyкции параболы: y = (x/%1)^2").arg(ui->spinBox_XDG->value()));
