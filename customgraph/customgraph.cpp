@@ -168,7 +168,6 @@ void CustomGraph::mouseMove(QMouseEvent * event)
     // Если точка найдена, выделяем её
     if (dataIndex >= 0 && dataIndex < customPlot->graph(0)->data()->size()) {
         const auto item = customPlot->graph(0)->data()->at(dataIndex);
-        // qDebug() << "Key: " << it->key << ", value: " << it->value;
         QToolTip::showText(event->globalPos(), QString("Key: %1, Valur: %2\nFind: %3").arg(item->key).arg(item->value).arg(dataIndex));
     }
 }

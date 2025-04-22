@@ -2,15 +2,11 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-
-// #define QCUSTOMPLOT_USE_LIBRARY
 #include <qcustomplot.h>
-
 #include <customgraph.h>
 #include "dialoghistory.h"
 #include <QUndoStack>
 #include "undocommands.h"
-// #include <QUndoCommand>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {

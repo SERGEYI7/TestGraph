@@ -48,6 +48,7 @@ void MainWindow::on_pushButton_MakeGraph_clicked()
 void MainWindow::on_pushButton_calc_distance_clicked()
 {
     qDebug() << "Чё посчитали: " << ui->customPlot->getSecondPoint() - ui->customPlot->getFirstPoint();
+    ui->statusbar->showMessage(QString("Чё посчитали: %1").arg(ui->customPlot->getSecondPoint() - ui->customPlot->getFirstPoint()));
 }
 
 void MainWindow::take_step_back() {
