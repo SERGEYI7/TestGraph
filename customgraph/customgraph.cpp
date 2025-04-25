@@ -27,6 +27,7 @@ CustomGraph::CustomGraph(QWidget *parent) : QCustomPlot(parent) {
 CustomGraph::~CustomGraph() {}
 
 void CustomGraph::makeDefaultGraph(int cx) {
+    qDebug() << "Новый дэфолт график, сх = " << cx;
     QVector<double> x(cx*2+1), y(cx*2+1);
     x.reserve(cx*2);
     y.reserve(cx*2);
@@ -41,12 +42,14 @@ void CustomGraph::makeDefaultGraph(int cx) {
     customPlot->xAxis->setLabel("x");
     customPlot->yAxis->setLabel("y");
     // set axes ranges, so we see all data:
-    customPlot->xAxis->setRange(-cx, cx);
+    qDebug() << "-cx = " << -cx;
+    qDebug() << "cx = " << cx;
     x_range_lower = -cx;
     x_range_upper = cx;
-    customPlot->yAxis->setRange(0, y.last());
     y_range_lower = 0;
     y_range_upper = y.last();
+    customPlot->xAxis->setRange(-cx, cx);
+    customPlot->yAxis->setRange(0, y.last());
 
     connect(customPlot->graph(0),
             static_cast<void (QCPGraph::*)(const QCPDataSelection&)>(&QCPGraph::selectionChanged),
@@ -70,12 +73,12 @@ void CustomGraph::make_sin(float amplitude, float frequency) {
     customPlot->graph(0)->setData(x_points, y_points);
     customPlot->xAxis->setLabel("x");
     customPlot->yAxis->setLabel("y");
-    customPlot->xAxis->setRange(0, frequency);
     x_range_lower = 0;
     x_range_upper = frequency;
-    customPlot->yAxis->setRange(-amplitude, amplitude);
     y_range_lower = -amplitude;
     y_range_upper = amplitude;
+    customPlot->xAxis->setRange(0, frequency);
+    customPlot->yAxis->setRange(-amplitude, amplitude);
     customPlot->replot();
 }
 
