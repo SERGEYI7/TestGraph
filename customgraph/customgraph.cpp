@@ -13,6 +13,8 @@ CustomGraph::CustomGraph(QWidget *parent) : QCustomPlot(parent) {
     connect(customPlot, &QCustomPlot::mousePress, this, &CustomGraph::mousePress);
     connect(customPlot, &QCustomPlot::mouseWheel, this, &CustomGraph::mouseWheel);
     connect(customPlot, &QCustomPlot::mouseMove, this, &CustomGraph::mouseMove);
+    connect(customPlot->xAxis, qOverload<const QCPRange &, const QCPRange &>(&QCPAxis::rangeChanged), this, &CustomGraph::changeRangeX);
+    connect(customPlot->yAxis, qOverload<const QCPRange &, const QCPRange &>(&QCPAxis::rangeChanged), this, &CustomGraph::changeRangeY);
     cursor_start = new QCPItemLine(customPlot);
     cursor_start->start->setCoords(0, 0);
     cursor_start->end->setCoords(0, 0);
@@ -40,7 +42,11 @@ void CustomGraph::makeDefaultGraph(int cx) {
     customPlot->yAxis->setLabel("y");
     // set axes ranges, so we see all data:
     customPlot->xAxis->setRange(-cx, cx);
+    x_range_lower = -cx;
+    x_range_upper = cx;
     customPlot->yAxis->setRange(0, y.last());
+    y_range_lower = 0;
+    y_range_upper = y.last();
 
     connect(customPlot->graph(0),
             static_cast<void (QCPGraph::*)(const QCPDataSelection&)>(&QCPGraph::selectionChanged),
@@ -65,7 +71,11 @@ void CustomGraph::make_sin(float amplitude, float frequency) {
     customPlot->xAxis->setLabel("x");
     customPlot->yAxis->setLabel("y");
     customPlot->xAxis->setRange(0, frequency);
+    x_range_lower = 0;
+    x_range_upper = frequency;
     customPlot->yAxis->setRange(-amplitude, amplitude);
+    y_range_lower = -amplitude;
+    y_range_upper = amplitude;
     customPlot->replot();
 }
 
@@ -142,17 +152,24 @@ void CustomGraph::mousePress(QMouseEvent * event)
     }
 }
 
-void CustomGraph::mouseWheel()
+void CustomGraph::mouseWheel(QWheelEvent * event)
 {
     // if an axis is selected, only allow the direction of that axis to be zoomed
     // if no axis is selected, both directions may be zoomed
 
-    if (customPlot->xAxis->selectedParts().testFlag(QCPAxis::spAxis))
-        customPlot->axisRect()->setRangeZoom(customPlot->xAxis->orientation());
-    else if (customPlot->yAxis->selectedParts().testFlag(QCPAxis::spAxis))
-        customPlot->axisRect()->setRangeZoom(customPlot->yAxis->orientation());
-    else
-        customPlot->axisRect()->setRangeZoom(Qt::Horizontal|Qt::Vertical);
+    // if (customPlot->xAxis->selectedParts().testFlag(QCPAxis::spAxis))
+    //     customPlot->axisRect()->setRangeZoom(customPlot->xAxis->orientation());
+    // else if (customPlot->yAxis->selectedParts().testFlag(QCPAxis::spAxis))
+    //     customPlot->axisRect()->setRangeZoom(customPlot->yAxis->orientation());
+    // else
+    //     customPlot->axisRect()->setRangeZoom(Qt::Horizontal|Qt::Vertical);
+
+    qDebug() << "Сработала колесо";
+    customPlot->xAxis->setRangeLower(customPlot->xAxis->range().lower-x_range_upper/20);
+    customPlot->xAxis->setRangeUpper(customPlot->xAxis->range().upper+x_range_upper/20);
+
+    customPlot->yAxis->setRangeLower(customPlot->yAxis->range().lower-y_range_upper/20);
+    customPlot->yAxis->setRangeUpper(customPlot->yAxis->range().upper+y_range_upper/20);
 }
 
 void CustomGraph::mouseMove(QMouseEvent * event)
@@ -183,5 +200,35 @@ void CustomGraph::selectionChanged(const QCPDataSelection &selection) {
             qDebug() << "Key: " << it->key << ", value: " << it->value;
 
         }
+    }
+}
+
+void CustomGraph::changeRangeX(const QCPRange &newRange, const QCPRange &oldRange) {
+
+    qDebug() << "Изменился диапазон Х";
+    if (newRange.lower < x_range_lower) {
+        customPlot->xAxis->setRangeLower(x_range_lower);
+        // customPlot->replot();
+        // if (newRange.upper ) // Если не максимум то не трогаем, или как то так
+        customPlot->xAxis->setRangeUpper(oldRange.upper);
+    }
+    if (newRange.upper > x_range_upper) {
+        customPlot->xAxis->setRangeUpper(x_range_upper);
+        // customPlot->replot();
+        customPlot->xAxis->setRangeLower(oldRange.lower);
+    }
+}
+
+void CustomGraph::changeRangeY(const QCPRange &newRange, const QCPRange &oldRange) {
+    qDebug() << "Изменился диапазон У";
+    if (newRange.lower < y_range_lower) {
+        customPlot->yAxis->setRangeLower(y_range_lower);
+        // customPlot->replot();
+        customPlot->yAxis->setRangeUpper(oldRange.upper);
+    }
+    if (newRange.upper > y_range_upper) {
+        customPlot->yAxis->setRangeUpper(y_range_upper);
+        // customPlot->replot();
+        customPlot->yAxis->setRangeLower(oldRange.lower);
     }
 }

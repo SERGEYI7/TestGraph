@@ -19,12 +19,15 @@ public:
 
 private:
     float first_point{0}, second_point{0};
+    double x_range_lower{0}, x_range_upper{0}, y_range_lower{0}, y_range_upper{0};
 
 private slots:
     void mousePress(QMouseEvent * event);
-    void mouseWheel();
+    void mouseWheel(QWheelEvent * event);
     void mouseMove(QMouseEvent * event);
     void selectionChanged(const QCPDataSelection &selection);
+    void changeRangeX(const QCPRange &newRange, const QCPRange &oldRange);
+    void changeRangeY(const QCPRange &newRange, const QCPRange &oldRange);
 };
 
 #endif // CUSTOMGRAPH_H
