@@ -32,9 +32,17 @@ private slots:
 
     void on_action_triggered();
 
+    void click_left();
+
+    void click_right();
+
+    void click_up();
+
+    void click_down();
+
 private:
     Ui::MainWindow *ui;
-    QSharedPointer<QShortcut> shortcut_back, shortcut_forward;
+    QSharedPointer<QShortcut> shortcut_back, shortcut_forward, left, right, up, down;
     QSharedPointer<QUndoStack> undoStack;
 };
 #endif // MAINWINDOW_H

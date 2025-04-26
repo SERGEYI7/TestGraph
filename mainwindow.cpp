@@ -13,9 +13,17 @@ MainWindow::MainWindow(QWidget *parent)
 
     shortcut_back = QSharedPointer<QShortcut>(new QShortcut(QKeySequence("Ctrl+Z"), this));
     shortcut_forward = QSharedPointer<QShortcut>(new QShortcut(QKeySequence("Ctrl+Y"), this));
-
     connect(shortcut_back.data(), &QShortcut::activated, this, &MainWindow::take_step_back);
     connect(shortcut_forward.data(), &QShortcut::activated, this, &MainWindow::take_step_forward);
+
+    left = QSharedPointer<QShortcut>(new QShortcut(QKeySequence("Left"), this));
+    right = QSharedPointer<QShortcut>(new QShortcut(QKeySequence("Right"), this));
+    up = QSharedPointer<QShortcut>(new QShortcut(QKeySequence("Up"), this));
+    down = QSharedPointer<QShortcut>(new QShortcut(QKeySequence("Down"), this));
+    connect(left.data(), &QShortcut::activated, this, &MainWindow::click_left);
+    connect(right.data(), &QShortcut::activated, this, &MainWindow::click_right);
+    connect(up.data(), &QShortcut::activated, this, &MainWindow::click_up);
+    connect(down.data(), &QShortcut::activated, this, &MainWindow::click_down);
 
 }
 
@@ -64,3 +72,20 @@ void MainWindow::on_action_triggered()
     dialog_history->show();
 }
 
+void MainWindow::click_left() {
+    ui->customPlot->click_left();
+}
+
+void MainWindow::click_right() {
+    ui->customPlot->click_right();
+}
+
+void MainWindow::click_up() {
+    qDebug() << "Click up";
+    ui->customPlot->click_up();
+}
+
+void MainWindow::click_down() {
+    qDebug() << "Click down";
+    ui->customPlot->click_down();
+}

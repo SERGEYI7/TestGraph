@@ -28,6 +28,12 @@ private slots:
     void selectionChanged(const QCPDataSelection &selection);
     void changeRangeX(const QCPRange &newRange, const QCPRange &oldRange);
     void changeRangeY(const QCPRange &newRange, const QCPRange &oldRange);
+
+public slots:
+    void click_left();
+    void click_right();
+    void click_up();
+    void click_down();
 };
 
 #endif // CUSTOMGRAPH_H

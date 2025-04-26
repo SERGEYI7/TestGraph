@@ -235,3 +235,81 @@ void CustomGraph::changeRangeY(const QCPRange &newRange, const QCPRange &oldRang
         customPlot->yAxis->setRangeLower(oldRange.lower);
     }
 }
+
+void CustomGraph::click_left() {
+    if (!customPlot->graphCount() || customPlot->graph(0)->dataCount() <= 1)
+        return;
+    const auto & currentRangeLower = customPlot->xAxis->range().lower;
+    const auto & currentRangeUpper = customPlot->xAxis->range().upper;
+    auto max_range = x_range_upper - x_range_lower;
+    if (currentRangeLower == x_range_lower)
+        return;
+    else if (currentRangeLower - (max_range/20) < x_range_lower) {
+        auto newUpper = currentRangeUpper - (x_range_lower-currentRangeLower);
+        customPlot->xAxis->setRangeUpper(newUpper);
+        customPlot->xAxis->setRangeLower(x_range_lower);
+    }
+    else {
+        customPlot->xAxis->setRangeLower(currentRangeLower-(max_range/20));
+        customPlot->xAxis->setRangeUpper(currentRangeUpper-(max_range/20));
+    }
+    customPlot->replot();
+}
+
+void CustomGraph::click_right() {
+    if (!customPlot->graphCount() || customPlot->graph(0)->dataCount() <= 1)
+        return;
+    const auto & currentRangeLower = customPlot->xAxis->range().lower;
+    const auto & currentRangeUpper = customPlot->xAxis->range().upper;
+    auto max_range = x_range_upper - x_range_lower;
+    if (currentRangeUpper == x_range_upper)
+        return;
+    else if (currentRangeUpper + (max_range/20) > x_range_upper) {
+        customPlot->xAxis->setRangeLower(currentRangeLower+(x_range_upper-currentRangeUpper));
+        customPlot->xAxis->setRangeUpper(x_range_upper);
+    }
+    else {
+        customPlot->xAxis->setRangeLower(currentRangeLower+(max_range/20));
+        customPlot->xAxis->setRangeUpper(currentRangeUpper+(max_range/20));
+    }
+    customPlot->replot();
+}
+
+void CustomGraph::click_up() {
+    if (!customPlot->graphCount() || customPlot->graph(0)->dataCount() <= 1)
+        return;
+    const auto & currentRangeLower = customPlot->yAxis->range().lower;
+    const auto & currentRangeUpper = customPlot->yAxis->range().upper;
+    auto max_range = y_range_upper - y_range_lower;
+    if (currentRangeUpper == y_range_upper)
+        return;
+    else if (currentRangeUpper + (max_range/20) > y_range_upper) {
+        customPlot->yAxis->setRangeLower(currentRangeLower+(y_range_upper-currentRangeUpper));
+        customPlot->yAxis->setRangeUpper(y_range_upper);
+    }
+    else {
+        customPlot->yAxis->setRangeLower(currentRangeLower+(max_range/20));
+        customPlot->yAxis->setRangeUpper(currentRangeUpper+(max_range/20));
+    }
+    customPlot->replot();
+}
+
+void CustomGraph::click_down() {
+    if (!customPlot->graphCount() || customPlot->graph(0)->dataCount() <= 1)
+        return;
+    const auto & currentRangeLower = customPlot->yAxis->range().lower;
+    const auto & currentRangeUpper = customPlot->yAxis->range().upper;
+    auto max_range = y_range_upper - y_range_lower;
+    if (currentRangeLower == y_range_lower)
+        return;
+    else if (currentRangeLower - (max_range/20) < y_range_lower) {
+        auto newUpper = currentRangeUpper - (y_range_lower-currentRangeLower);
+        customPlot->yAxis->setRangeUpper(newUpper);
+        customPlot->yAxis->setRangeLower(y_range_lower);
+    }
+    else {
+        customPlot->yAxis->setRangeLower(currentRangeLower-(max_range/20));
+        customPlot->yAxis->setRangeUpper(currentRangeUpper-(max_range/20));
+    }
+    customPlot->replot();
+}
