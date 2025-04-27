@@ -9,6 +9,10 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+if (MINGW)
+    add_compile_options(-Wa,-mbig-obj)
+endif()
+
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets PrintSupport Gui)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets PrintSupport Gui)
 message(${CMAKE_CURRENT_SOURCE_DIR})
@@ -24,10 +28,6 @@ set(PROJECT_SOURCES
         # qcustomplot/qcustomplot.h qcustomplot/qcustomplot.cpp
         customgraph/customgraph.h customgraph/customgraph.cpp
 )
-
-if (MINGW)
-    add_compile_options(-Wa,-mbig-obj)
-endif()
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(Graph

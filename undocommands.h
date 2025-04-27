@@ -46,5 +46,19 @@ private:
     int _cx;
 };
 
+class UndoCommandAddFromData : public UndoMyBase
+{
+public:
+    UndoCommandAddFromData(CustomGraph* qcp, QVector<double> x, QVector<double> y, const QUndoStack* undoStack, UndoMyBase * parent = nullptr);
+    virtual ~UndoCommandAddFromData() {}
+    virtual void make_graph() const override;
+    QVector<double> get_vector_x() const {return _x;}
+    QVector<double> get_vector_y() const {return _y;}
+
+private:
+    CustomGraph* _qcp;
+    QVector<double> _x, _y;
+};
+
 #endif // UNDOCOMMANDS_H
 

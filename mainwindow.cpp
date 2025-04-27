@@ -10,7 +10,6 @@ MainWindow::MainWindow(QWidget *parent)
     dialog_history = QSharedPointer<DialogHistory>(new DialogHistory);
     undoStack = QSharedPointer<QUndoStack>(new QUndoStack(this));
 
-
     shortcut_back = QSharedPointer<QShortcut>(new QShortcut(QKeySequence("Ctrl+Z"), this));
     shortcut_forward = QSharedPointer<QShortcut>(new QShortcut(QKeySequence("Ctrl+Y"), this));
     connect(shortcut_back.data(), &QShortcut::activated, this, &MainWindow::take_step_back);
@@ -24,7 +23,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(right.data(), &QShortcut::activated, this, &MainWindow::click_right);
     connect(up.data(), &QShortcut::activated, this, &MainWindow::click_up);
     connect(down.data(), &QShortcut::activated, this, &MainWindow::click_down);
-
 }
 
 MainWindow::~MainWindow()
@@ -51,11 +49,10 @@ void MainWindow::on_pushButton_MakeGraph_clicked()
 
 void MainWindow::on_pushButton_calc_distance_clicked()
 {
-    ui->statusbar->showMessage(QString("Чё посчитали: %1").arg(ui->customPlot->getSecondPoint() - ui->customPlot->getFirstPoint()));
+    ui->statusbar->showMessage(QString("Расстояние между точками: %1").arg(qFabs(ui->customPlot->getSecondPoint() - ui->customPlot->getFirstPoint())));
 }
 
 void MainWindow::take_step_back() {
-    qDebug() << "take_step_back";
     undoStack->undo();
     if (undoStack->index() == 0) {
         ui->customPlot->makeDefaultGraph(0);
@@ -63,7 +60,6 @@ void MainWindow::take_step_back() {
 }
 
 void MainWindow::take_step_forward() {
-    qDebug() << "take_step_forward";
     undoStack->redo();
 }
 
@@ -81,11 +77,74 @@ void MainWindow::click_right() {
 }
 
 void MainWindow::click_up() {
-    qDebug() << "Click up";
     ui->customPlot->click_up();
 }
 
 void MainWindow::click_down() {
-    qDebug() << "Click down";
     ui->customPlot->click_down();
 }
+
+void MainWindow::resizeEvent(QResizeEvent *event) {
+    QMainWindow::resizeEvent(event);
+    ui->scrollArea->setMaximumHeight(this->size().height()/10);
+}
+
+void MainWindow::on_pushButton_minus_clicked()
+{
+    if (!ui->customPlot->graphCount() || ui->customPlot->graph(0)->dataCount() <= 1 )
+        return;
+    QVector<double> x, y;
+    x.reserve(ui->customPlot->graph(0)->dataCount());
+    y.reserve(ui->customPlot->graph(0)->dataCount());
+    for (auto point : *(ui->customPlot->graph(0)->data())) {
+        x.append(point.key-ui->doubleSpinBox_minus->value());
+        y.append(point.value-ui->doubleSpinBox_minus->value());
+    }
+    undoStack->push(new UndoCommandAddFromData(ui->customPlot, std::move(x), std::move(y), undoStack.data()));
+}
+
+
+void MainWindow::on_pushButton_plus_clicked()
+{
+    if (!ui->customPlot->graphCount() || ui->customPlot->graph(0)->dataCount() <= 1 )
+        return;
+    QVector<double> x, y;
+    x.reserve(ui->customPlot->graph(0)->dataCount());
+    y.reserve(ui->customPlot->graph(0)->dataCount());
+    for (auto point : *(ui->customPlot->graph(0)->data())) {
+        x.append(point.key+ui->doubleSpinBox_minus->value());
+        y.append(point.value+ui->doubleSpinBox_minus->value());
+    }
+    undoStack->push(new UndoCommandAddFromData(ui->customPlot, std::move(x), std::move(y), undoStack.data()));
+}
+
+
+void MainWindow::on_pushButton_divide_clicked()
+{
+    if (!ui->customPlot->graphCount() || ui->customPlot->graph(0)->dataCount() <= 1 )
+        return;
+    QVector<double> x, y;
+    x.reserve(ui->customPlot->graph(0)->dataCount());
+    y.reserve(ui->customPlot->graph(0)->dataCount());
+    for (auto point : *(ui->customPlot->graph(0)->data())) {
+        x.append(point.key/ui->doubleSpinBox_minus->value());
+        y.append(point.value/ui->doubleSpinBox_minus->value());
+    }
+    undoStack->push(new UndoCommandAddFromData(ui->customPlot, std::move(x), std::move(y), undoStack.data()));
+}
+
+
+void MainWindow::on_pushButton_multiply_clicked()
+{
+    if (!ui->customPlot->graphCount() || ui->customPlot->graph(0)->dataCount() <= 1 )
+        return;
+    QVector<double> x, y;
+    x.reserve(ui->customPlot->graph(0)->dataCount());
+    y.reserve(ui->customPlot->graph(0)->dataCount());
+    for (auto point : *(ui->customPlot->graph(0)->data())) {
+        x.append(point.key*ui->doubleSpinBox_minus->value());
+        y.append(point.value*ui->doubleSpinBox_minus->value());
+    }
+    undoStack->push(new UndoCommandAddFromData(ui->customPlot, std::move(x), std::move(y), undoStack.data()));
+}
+

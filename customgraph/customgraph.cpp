@@ -3,8 +3,6 @@
 
 CustomGraph::CustomGraph(QWidget *parent) : QCustomPlot(parent) {
     customPlot = this;
-    // ui->customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes |
-    //                                 QCP::iSelectLegend | QCP::iSelectPlottables );
     customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom |
                                 QCP::iSelectItems | QCP::iMultiSelect);
     customPlot->addGraph();
@@ -21,13 +19,28 @@ CustomGraph::CustomGraph(QWidget *parent) : QCustomPlot(parent) {
     cursor_end = new QCPItemLine(customPlot);
     cursor_end->start->setCoords(0, 0);
     cursor_end->end->setCoords(0, 0);
-    // makeGraph();
 }
 
 CustomGraph::~CustomGraph() {}
 
+void CustomGraph::MakeFromData(QVector<double> x, QVector<double> y) {
+    customPlot->graph(0)->setData(x, y);
+    customPlot->xAxis->setLabel("x");
+    customPlot->yAxis->setLabel("y");
+    x_range_lower = *std::min_element(x.constBegin(), x.constEnd());
+    x_range_upper = *std::max_element(x.constBegin(), x.constEnd());
+    y_range_lower = *std::min_element(y.constBegin(), y.constEnd());;
+    y_range_upper = *std::max_element(y.constBegin(), y.constEnd());
+    customPlot->xAxis->setRange(x_range_lower, x_range_upper);
+    customPlot->yAxis->setRange(y_range_lower, y_range_upper);
+    connect(customPlot->graph(0),
+            static_cast<void (QCPGraph::*)(const QCPDataSelection&)>(&QCPGraph::selectionChanged),
+            this,
+            &CustomGraph::selectionChanged);
+    customPlot->replot();
+}
+
 void CustomGraph::makeDefaultGraph(int cx) {
-    qDebug() << "Новый дэфолт график, сх = " << cx;
     QVector<double> x(cx*2+1), y(cx*2+1);
     x.reserve(cx*2);
     y.reserve(cx*2);
@@ -36,26 +49,22 @@ void CustomGraph::makeDefaultGraph(int cx) {
         x[i+cx] = i;
         y[i+cx] = std::abs(x[i+cx]*x[i+cx]);
     }
-    // create graph and assign data to it:
+
     customPlot->graph(0)->setData(x, y);
-    // give the axes some labels:
+
     customPlot->xAxis->setLabel("x");
     customPlot->yAxis->setLabel("y");
-    // set axes ranges, so we see all data:
-    qDebug() << "-cx = " << -cx;
-    qDebug() << "cx = " << cx;
+
     x_range_lower = -cx;
     x_range_upper = cx;
     y_range_lower = 0;
     y_range_upper = y.last();
     customPlot->xAxis->setRange(-cx, cx);
     customPlot->yAxis->setRange(0, y.last());
-
     connect(customPlot->graph(0),
             static_cast<void (QCPGraph::*)(const QCPDataSelection&)>(&QCPGraph::selectionChanged),
             this,
             &CustomGraph::selectionChanged);
-    // connect(ui->customPlot->graph(0), static_cast<void (QCPGraph::*)()>(&QCPGraph::selectionChanged), this, &MainWindow::selectionChanged);
 
     customPlot->replot();
 }
@@ -94,18 +103,7 @@ void CustomGraph::mousePress(QMouseEvent * event)
         double y = customPlot->yAxis->pixelToCoord(event->pos().y());
 
         // Находим ближайшую точку
-
         // Если точка найдена, выделяем её
-        // if (dataIndex >= 0 && dataIndex < customPlot->graph(0)->data()->size()) {
-        //     QCPDataSelection selection;
-        //     selection.addDataRange(QCPDataRange(dataIndex, dataIndex + 1));
-        //     customPlot->graph(0)->setSelection(selection);
-        //     customPlot->replot();
-        // }
-
-        // if an axis is selected, only allow the direction of that axis to be dragged
-        // if no axis is selected, both directions may be dragged
-        // qDebug() << "Mouse event";
         if (customPlot->xAxis->selectedParts().testFlag(QCPAxis::spAxis))
             customPlot->axisRect()->setRangeDrag(customPlot->xAxis->orientation());
         else if (customPlot->yAxis->selectedParts().testFlag(QCPAxis::spAxis))
@@ -122,19 +120,6 @@ void CustomGraph::mousePress(QMouseEvent * event)
         cursor_start->start->setCoords(x, start);
         cursor_start->end->setCoords(x, end);
         first_point = x;
-
-        qDebug() << customPlot->graph()->dataMainKey(dataBeginIndex-1);
-        qDebug() << customPlot->graph()->dataMainValue(dataBeginIndex-1);
-
-
-        if(dataBeginIndex >= 0 && dataBeginIndex <= customPlot->graph(0)->data()->size())
-        {
-            qDebug() << dataBeginIndex << "X:" << x << "Y:" << y;
-        }
-        else
-        {
-            qDebug() << dataBeginIndex << "X:" << 0 << "Y:" << 0;
-        }
 
         customPlot->replot();
     }
@@ -157,17 +142,8 @@ void CustomGraph::mousePress(QMouseEvent * event)
 
 void CustomGraph::mouseWheel(QWheelEvent * event)
 {
-    // if an axis is selected, only allow the direction of that axis to be zoomed
-    // if no axis is selected, both directions may be zoomed
-
-    // if (customPlot->xAxis->selectedParts().testFlag(QCPAxis::spAxis))
-    //     customPlot->axisRect()->setRangeZoom(customPlot->xAxis->orientation());
-    // else if (customPlot->yAxis->selectedParts().testFlag(QCPAxis::spAxis))
-    //     customPlot->axisRect()->setRangeZoom(customPlot->yAxis->orientation());
-    // else
-    //     customPlot->axisRect()->setRangeZoom(Qt::Horizontal|Qt::Vertical);
-
-    qDebug() << "Сработала колесо";
+    if (!customPlot->graphCount() || customPlot->graph(0)->dataCount() <= 1)
+        return;
     customPlot->xAxis->setRangeLower(customPlot->xAxis->range().lower-x_range_upper/20);
     customPlot->xAxis->setRangeUpper(customPlot->xAxis->range().upper+x_range_upper/20);
 
@@ -177,7 +153,6 @@ void CustomGraph::mouseWheel(QWheelEvent * event)
 
 void CustomGraph::mouseMove(QMouseEvent * event)
 {
-    // QToolTip::showText(event->globalPos(), QString("X:%1, Y:%2").arg(event->pos().x()).arg(event->pos().y()));
     // Получаем координаты клика
     double x = customPlot->xAxis->pixelToCoord(event->pos().x());
     double y = customPlot->yAxis->pixelToCoord(event->pos().y());
@@ -188,52 +163,47 @@ void CustomGraph::mouseMove(QMouseEvent * event)
     // Если точка найдена, выделяем её
     if (dataIndex >= 0 && dataIndex < customPlot->graph(0)->data()->size()) {
         const auto item = customPlot->graph(0)->data()->at(dataIndex);
-        QToolTip::showText(event->globalPos(), QString("Key: %1, Valur: %2\nFind: %3").arg(item->key).arg(item->value).arg(dataIndex));
+        QToolTip::showText(event->globalPos(), QString("X: %1, Y: %2").arg(item->key).arg(item->value));
     }
 }
 
 void CustomGraph::selectionChanged(const QCPDataSelection &selection) {
-    // QCPDataSelection selection = ui->customPlot->graph(0)->selection();
     for(QCPDataRange & dataRange: selection.dataRanges()) {
         QCPGraphDataContainer::const_iterator begin = customPlot->graph(0)->data()->at(dataRange.begin()); // get range begin iterator from index
         QCPGraphDataContainer::const_iterator end = customPlot->graph(0)->data()->at(dataRange.end()); // get range end iterator from index
-        for (QCPGraphDataContainer::const_iterator it=begin; it!=end; ++it)
-        {
-            // iterator "it" will go through all selected data points, as an example, we calculate the value average
-            qDebug() << "Key: " << it->key << ", value: " << it->value;
-
-        }
     }
 }
 
 void CustomGraph::changeRangeX(const QCPRange &newRange, const QCPRange &oldRange) {
-
-    qDebug() << "Изменился диапазон Х";
+    if (!customPlot->graphCount() || customPlot->graph(0)->dataCount() <= 1)
+        return;
     if (newRange.lower < x_range_lower) {
         customPlot->xAxis->setRangeLower(x_range_lower);
-        // customPlot->replot();
-        // if (newRange.upper ) // Если не максимум то не трогаем, или как то так
         customPlot->xAxis->setRangeUpper(oldRange.upper);
     }
     if (newRange.upper > x_range_upper) {
         customPlot->xAxis->setRangeUpper(x_range_upper);
-        // customPlot->replot();
         customPlot->xAxis->setRangeLower(oldRange.lower);
     }
 }
 
 void CustomGraph::changeRangeY(const QCPRange &newRange, const QCPRange &oldRange) {
-    qDebug() << "Изменился диапазон У";
+    if (!customPlot->graphCount() || customPlot->graph(0)->dataCount() <= 1)
+        return;
     if (newRange.lower < y_range_lower) {
         customPlot->yAxis->setRangeLower(y_range_lower);
-        // customPlot->replot();
         customPlot->yAxis->setRangeUpper(oldRange.upper);
     }
     if (newRange.upper > y_range_upper) {
         customPlot->yAxis->setRangeUpper(y_range_upper);
-        // customPlot->replot();
         customPlot->yAxis->setRangeLower(oldRange.lower);
     }
+
+    cursor_start->start->setCoords(cursor_start->start->key(), customPlot->yAxis->pixelToCoord(0));
+    cursor_start->end->setCoords(cursor_start->start->key(), customPlot->yAxis->pixelToCoord(customPlot->size().height()));
+
+    cursor_end->start->setCoords(cursor_end->start->key(), customPlot->yAxis->pixelToCoord(0));
+    cursor_end->end->setCoords(cursor_end->start->key(), customPlot->yAxis->pixelToCoord(customPlot->size().height()));
 }
 
 void CustomGraph::click_left() {

@@ -13,6 +13,7 @@ public:
     QCPItemLine *cursor_end;
     void makeDefaultGraph(int x);
     void make_sin(float amplitude, float frequency);
+    void MakeFromData(QVector<double> x, QVector<double> y);
     float getFirstPoint() {return first_point;}
     float getSecondPoint() {return second_point;}
     virtual ~CustomGraph();

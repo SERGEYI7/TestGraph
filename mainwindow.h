@@ -40,9 +40,21 @@ private slots:
 
     void click_down();
 
+    void on_pushButton_minus_clicked();
+
+    void on_pushButton_plus_clicked();
+
+    void on_pushButton_divide_clicked();
+
+    void on_pushButton_multiply_clicked();
+
 private:
     Ui::MainWindow *ui;
     QSharedPointer<QShortcut> shortcut_back, shortcut_forward, left, right, up, down;
     QSharedPointer<QUndoStack> undoStack;
+
+protected:
+    void resizeEvent(QResizeEvent *event) override;
+
 };
 #endif // MAINWINDOW_H

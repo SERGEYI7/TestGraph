@@ -40,3 +40,13 @@ UndoCommandAddParabola::UndoCommandAddParabola(CustomGraph* qcp, int cx, const Q
 void UndoCommandAddParabola::make_graph() const {
     _qcp->makeDefaultGraph(get_cx());
 }
+
+UndoCommandAddFromData::UndoCommandAddFromData(CustomGraph* qcp, QVector<double> x, QVector<double> y, const QUndoStack* undoStack, UndoMyBase * parent):
+    UndoMyBase(undoStack, parent), _qcp(qcp), _x(x), _y(y)
+{
+    _qcp->MakeFromData(x, y);
+}
+
+void UndoCommandAddFromData::make_graph() const {
+    _qcp->MakeFromData(get_vector_x(), get_vector_y());
+}
