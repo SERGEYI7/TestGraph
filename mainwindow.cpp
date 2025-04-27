@@ -7,7 +7,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    dialog_history = QSharedPointer<DialogHistory>(new DialogHistory);
+    // dialog_history = QSharedPointer<DialogHistory>(new DialogHistory);
     undoStack = QSharedPointer<QUndoStack>(new QUndoStack(this));
 
     shortcut_back = QSharedPointer<QShortcut>(new QShortcut(QKeySequence("Ctrl+Z"), this));
@@ -35,14 +35,14 @@ void MainWindow::on_pushButton_MakeGraph_clicked()
     const QString tabText = ui->tabWidget->tabText(ui->tabWidget->currentIndex());
     if (tabText == "Функция синуса") {
         undoStack->push(new UndoCommandAddSin(ui->customPlot, ui->spinBox_Amplitude->value(), ui->spinBox_Frequency->value(), undoStack.data()));
-        dialog_history->append(QDateTime::currentDateTime().toString() +
-                               QString(" | Постороен график функции синуса: y = %1 * sin(PI/%2)").
-                                                                         arg(ui->spinBox_Amplitude->value()).arg(ui->spinBox_Frequency->value()));
+        // dialog_history->append(QDateTime::currentDateTime().toString() +
+        //                        QString(" | Постороен график функции синуса: y = %1 * sin(PI/%2)").
+        //                                                                  arg(ui->spinBox_Amplitude->value()).arg(ui->spinBox_Frequency->value()));
     }
     else if (tabText == "Другая функция") {
         undoStack->push(new UndoCommandAddParabola(ui->customPlot, ui->spinBox_XDG->value(), undoStack.data()));
-        dialog_history->append(QDateTime::currentDateTime().toString() +
-                               QString(" | Постороен график фуyкции параболы: y = (x/%1)^2").arg(ui->spinBox_XDG->value()));
+        // dialog_history->append(QDateTime::currentDateTime().toString() +
+        //                        QString(" | Постороен график фуyкции параболы: y = (x/%1)^2").arg(ui->spinBox_XDG->value()));
     }
 }
 
